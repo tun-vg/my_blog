@@ -39,6 +39,9 @@ const CreatePostPage = () => {
 
     const onSubmit = async (data) => {
         data.Content = html;
+        data.categoryId = selectedCategory.categoryId;
+        data.postTags = dataTagsSelected;
+        console.log(data);
         const result = await addPost(data);
         console.log(result);
         if (result.isSuccess) {
@@ -51,6 +54,7 @@ const CreatePostPage = () => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [dataTags, setDataTags] = useState([]);
     const [dataTagsSelected, setDataTagsSelected] = useState([]);
+    const [isDoneSelectCate, setIsDoneSelectCate] = useState(false);
 
     const getDataCategories = async () => {
         const result = await getCategories();
@@ -61,6 +65,7 @@ const CreatePostPage = () => {
         setSelectedCategory(category);
         const result = await getTagsByCategoryId(category.categoryId);
         setDataTags(result.items);
+        setDataTagsSelected([]);
     }
 
     useEffect(() => {
@@ -89,10 +94,10 @@ const CreatePostPage = () => {
                 <h1 className="font-bold text-2xl">Tạo bài viết mới</h1>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <input type="hidden" {...register('AuthorId')} value='a6b82feb-d839-40bc-af00-7b3e6ffd1002' />
-                    <div>
+                    <div className="mt-3">
                         <label className="font-medium text-gray-700">Chọn chủ đề </label>
                         <br />
-                        {!openSelectCategory && <button
+                        {(!openSelectCategory && !isDoneSelectCate) && <button
                             className="border-dashed border-[1px] border-gray-600 rounded-3xl py-2 px-3 mt-1 flex gap-1 justify-center items-center"
                             onClick={() => setOpenSelectCategory(true)}
                         >
@@ -103,8 +108,8 @@ const CreatePostPage = () => {
 
                     {openSelectCategory && <div className="border-[1px] border-gray-300 rounded-md shadow-lg min-h-[250px] relative">
                         <div className="flex gap-2 mb-[60px] h-full">
-                            <div className="w-[30%] bg-gray-50 h-full">
-                                <h2 className="p-2">Danh sách chủ đề:</h2>
+                            <div className="w-[30%] bg-gray-50 min-h-[190px]">
+                                <h2 className="p-2 font-semibold">Danh sách chủ đề:</h2>
                                 <div className="overflow-auto">
                                     {dataCategories.map((e) => {
                                         return <div
@@ -118,8 +123,8 @@ const CreatePostPage = () => {
                                 </div>
                             </div>
                             {/* <div className="w-[2px] h-auto bg-gray-400"></div> */}
-                            <div className="w-[35%] p-2 bg-gray-50">
-                                <h2>Danh sách tag:</h2>
+                            <div className="w-[35%] p-2 bg-gray-50 min-h-[190px]">
+                                <h2 className="font-semibold">Danh sách tag:</h2>
                                 <div>
                                     {dataTags.map((e) => {
                                         return <button
@@ -133,8 +138,8 @@ const CreatePostPage = () => {
                                 </div>
                             </div>
                             {/* <div className="w-[2px] h-auto bg-gray-400"></div> */}
-                            <div className="w-[35%] p-2 bg-gray-50">
-                                <h2>Các tag đã chọn:</h2>
+                            <div className="w-[35%] p-2 bg-gray-50 min-h-[190px]">
+                                <h2 className="font-semibold">Các tag đã chọn:</h2>
                                 <div>
                                     {dataTagsSelected.map((e) => {
                                         return <button
@@ -151,28 +156,71 @@ const CreatePostPage = () => {
                         <div className="absolute right-0 bottom-0 w-full">
                             <div className="h-[2px] bg-gray-400 w-full"></div>
                             <div className="flex justify-end gap-4 p-2">
-                                <button 
-                                    className="border-[1px] rounded-md border-gray-300 py-2 px-4"
+                                <button
+                                    className="border-[1px] rounded-md border-gray-300 py-2 px-4 font-medium"
                                     onClick={() => setOpenSelectCategory(false)}
                                 >
                                     Hủy
                                 </button>
-                                <button className="border-[1px] rounded-md border-gray-300 bg-blue-500 py-2 px-4 text-white">Xác nhận</button>
+                                <button
+                                    className="border-[1px] rounded-md border-gray-300 bg-blue-500 py-2 px-4 text-white font-medium"
+                                    onClick={() => {
+                                        setIsDoneSelectCate(true);
+                                        setOpenSelectCategory(false)
+                                    }}
+                                >
+                                    Xác nhận
+                                </button>
                             </div>
                         </div>
                     </div>
                     }
 
-                    {/* <input type="text" {...register('CategoryId')} value='08dd9edf-2032-4bfb-82fd-86be9e716664' /> */}
+                    {isDoneSelectCate && <div className="border-[1px] border-gray-300 rounded-md p-2 shadow-lg grid grid-rows-2 gap-2">
+                        <div>
+                            <h2 className="font-semibold">Chủ đề đã được chọn:</h2>
+                            <div
+                                className="w-fit border-[1px] border-gray-400 rounded-3xl py-1 px-2 mx-2 my-1"
+                                onClick={() => {
+                                    setOpenSelectCategory(true);
+                                    setIsDoneSelectCate(false);
+                                }}
+                            >
+                                {selectedCategory?.name}
+                            </div>
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Các tag đã được chọn:</h2>
+                            <div>
+                                {dataTagsSelected.map((e) => {
+                                    return <button
+                                        key={e.tagId}
+                                        className="w-fit border-[1px] border-gray-400 rounded-3xl py-1 px-2 mx-2 my-1"
+                                        onClick={() => {
+                                            setOpenSelectCategory(true);
+                                            setIsDoneSelectCate(false);
+                                        }}
+                                    >
+                                        {e.name}
+                                    </button>
+                                })}
+                            </div>
+                        </div>
+                    </div>
+                    }
+
                     <TextField
                         name='Title'
                         label='Tiều đề'
                         control={control}
+                        className="mt-3"
                     />
 
                     <Editor onChange={setHtml} className='h-full' />
 
-                    <input type="submit" value="Add" />
+                    <div className="flex justify-center mt-3">
+                        <input type="submit" value="Tạo" className="bg-blue-500 text-white font-bold px-5 py-2 rounded-md" />
+                    </div>
                 </form>
             </div>
             <ToastContainer />

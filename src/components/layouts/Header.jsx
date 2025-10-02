@@ -19,7 +19,7 @@ const Header = () => {
             {/* <div className="w-full h-64 bg-cover bg-center" style={{backgroundImage: url('https://www.industrialempathy.com/img/remote/ZiClJf-640w.avif')}}> */}
             <div className="container-app w-full h-fit bg-cover bg-center shadow-lg pt-5 pb-5">
                 <div className="flex justify-between items-center">
-                    <h1>Blog</h1>
+                    <h1>TUN BLOG</h1>
                     <div>
                         <ul className="flex gap-x-3">
                             <li>Tag1</li>
